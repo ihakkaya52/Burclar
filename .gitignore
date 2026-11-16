@@ -1,0 +1,6 @@
+cikti/
+build/
+__pycache__/
+*.pyc
+motor/fonts/
+*.mp4
