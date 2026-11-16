@@ -8,7 +8,8 @@ Animasyonlar, altyazılar, ses efektleri ve fon müziği tamamen kodla üretilir
 | Klasör / dosya | İçerik |
 |---|---|
 | `motor/engine.py` | Animasyon motoru: arka plan, altyazılar, etiketler, uyum halkası, puan çubukları, mesajlaşma ekranı, konfeti, ses efektleri, müzik |
-| `motor/yardimci.py` | Ortak yardımcılar (`big`, `spread`, `soften`, `ses`) |
+| `motor/yardimci.py` | Ortak yardımcılar (`big`, `spread`, `soften`, `ses`, `zaman`) |
+| `motor/sahne.py` | Hareketli sahne parçaları: takvim, gösterge, kapı, şalter, ses dalgası, yazan balon, şimşek, yağış |
 | `videolar/*.py` | Her videonun senaryosu: hangi yazının, hangi saniyede, hangi efektle çıkacağı |
 | `sesler/*.mp3` | ElevenLabs'tan alınan orijinal seslendirmeler |
 | `metinler/*.txt` | Seslendirme metinleri (ElevenLabs'a yapıştırılan halleri) |
@@ -55,7 +56,8 @@ Bir şakaya ya da gerilim anına ek sessizlik gerekiyorsa, `render.py` içindeki
 
 ## Video türleri
 
-- **"5 şey" geri sayımı** (tek burç): `koc_erkegi`, `ikizler_erkegi`, `akrep_erkegi`, `boga`. Hareketli vurgu kullanır.
+- **"5 şey" geri sayımı** (tek burç): `koc_erkegi`, `ikizler_erkegi`, `boga`, `akrep_erkegi`, `akrep_kadini`. Hareketli vurgu kullanır.
+  Akrep videoları yeni kalıptadır: takvimli açılış ve her maddeye ayrı hareketli sahne.
 - **Aşk uyumu**: giriş, uyum halkası, neden çekilirler, sorun, mesajlaşma, puanlar, formül, kapanış.
 - **Arkadaşlık**: çarpışmalı giriş, uyum halkası, iyi taraf, kötü taraf (şaka), puanlar, sonuç, kapanış.
 - **Genel**: `burclar_genel`. 12 burç ve tarihleri.

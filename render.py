@@ -17,6 +17,8 @@ sys.path.insert(0, os.path.join(KOK, "videolar"))
 BOSLUK = {
     "ikizler_erkek_x_akrep_erkek_arkadaslik": [(24.40, 1.4)],   # "İkizler de hemen…" sonrası sansür şakası
     "koc_erkegi": [(23.80, 0.6)],                               # "Ve bir numara…" sonrası gerilim
+    "akrep_erkegi": [(25.70, 0.6)],                             # "Ve bir numara…" sonrası gerilim
+    "akrep_kadini": [(26.42, 0.6), (30.10, 0.35)],              # "Ve bir numara…" sonrası + "geçmiş olsun" öncesi
 }
 ON_SESSIZLIK_MS = 150
 TEMIZLIK = "highpass=f=80,acompressor=threshold=-20dB:ratio=3.5:attack=4:release=80:makeup=2,loudnorm=I=-15:TP=-1.5:LRA=7"

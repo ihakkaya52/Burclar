@@ -5,6 +5,7 @@ Kurulum ve komutlar için `README.md` dosyasına bak.
 
 ## Serinin planı
 
+- **Harun "başla" demeden hiçbir şey üretme** (metin, ses, video). Açıkça "şunu gönder" derse o da başla demektir.
 - **12 burç × erkek** ve **12 burç × kadın** için tek burç videoları ("5 şey" geri sayımı)
 - **Arkadaşlık videoları:** bir burcun erkeği ile diğer burçların erkekleri
 - **Aşk uyumu videoları:** bir burcun erkeği ile diğer burçların kadınları
@@ -16,8 +17,8 @@ Bitenleri görmek için `python render.py liste` komutunu çalıştır, ya da `v
 
 1. Harun bir video ister, örneğin "Koç erkeği" ya da "Boğa erkeği ve Balık kadını".
 2. **Seslendirme metnini yaz** ve cevapta **tek paragraf** halinde ver. Harun bölümlere ayrılmış hali değil, tek metin istiyor.
-   Metni `metinler/<video>.txt` dosyasına da kaydet. Önce sadece metni ver. Harun sesi ElevenLabs'ta kendisi üretip MP3 olarak gönderir.
-3. Gelen MP3'ü `sesler/<video>.mp3` olarak kaydet.
+   Metni `metinler/<video>.txt` dosyasına da kaydet.
+3. Sesi ElevenLabs'ta üret (aşağıdaki "Sesler" bölümü) ve MP3'ü `sesler/<video>.mp3` olarak kaydet.
 4. **Zamanlamayı çıkar:** `python analiz.py sesler/<video>.mp3` (varsayılan eşik 0.004, boşluk 0.25 sn).
    - Her parçayı hece sayısına bakarak metindeki cümleyle eşleştir. Konuşma hızı yaklaşık 0,13–0,17 sn/hece.
    - Parçalar birbirine yapışıksa daha küçük eşik ya da boşlukla tekrar bak.
@@ -47,7 +48,37 @@ Bitenleri görmek için `python render.py liste` komutunu çalıştır, ya da `v
   - Şakanın oturması için gereken sessizliği `render.py` içindeki `BOSLUK` sözlüğüne ekle.
 - **Uyum puanları:** Astrolojide yaygın kabul gören eşleşmelere göre temsili değerler.
 
+## Sesler (ElevenLabs)
+
+Harun artık sesi kendisi üretmiyor: ElevenLabs bağlantısı üzerinden ben üretiyorum (model `eleven_v4`).
+Her kategori ayrı bir kişi tarafından seslendirilir:
+
+- **Erkek burç videoları:** Emre – Deep & Natural Turkish Male (`euBhqSy9BY3XHNLwxF7J`)
+- **Kadın burç videoları:** Hale – Warm Turkish Influencer (`SBqwqJrrVooSHZ6ofGmf`)
+- Arkadaşlık ve aşk videoları için ses henüz seçilmedi; Harun'a sor.
+
+Tarih ve sayıları metinde rakamla yaz ("23 Ekim", "3 yıl"); `eleven_v4` doğru okuyor. Üretim kredi harcar:
+aynı metni ikinci kez üretme, gelen iki denemeden birini kullan.
+
+## Tek burç ("5 şey") videolarının görsel dili
+
+Harun eski halini "donuk, ekran hep sabit" buldu. Yeni kalıp `akrep_erkegi` ve `akrep_kadini`:
+
+- **İlk 3 saniye takvim:** metin burcun tarih aralığıyla açılır, ekranda ay yaprağı günleri sırayla boyar
+  (`sahne.takvim_giris`; başka burç için aynı fonksiyonu o burcun aylarıyla yaz).
+- **Her maddeye kendi mini sahnesi:** rakam ortaya çarpar, söylenince köşeye uçar (`sahne.sayi`), ortayı
+  o maddeyi anlatan hareketli görsel alır (`motor/sahne.py`: `Meter`, `Kapi`, `Anahtar`, `Dalga`, `Yazi`,
+  `Simsek`, `Yagis`, `Yorunge`, `Glow`, `Fx`). Arka arkaya iki sahne aynı düzende olmasın.
+- **Maddeler izleyiciye "sen" diye konuşur** ("ondan hiçbir şey saklayamazsın"), burcu dışarıdan anlatmaz.
+- Senaryoda zamanları `z = zaman("<video>")` ile yaz: mp3 saniyesini verirsin, 0,15 sn gecikmeyi ve
+  `BOSLUK`'ları kendisi ekler.
+
 ## Teknik tuzaklar
+
+- **Fontlar:** yeni bir ortamda `motor/fonts/` boş gelir ve render "cannot open resource" hatası verir.
+  `kurulum.sh` içindeki iki `curl` satırını çalıştır.
+- **Emoji yalnızca `rich()` üzerinden çizilir:** `sticker`, `balon`, `v.cap` emoji destekler; doğrudan
+  `d.text` ile yazılan metinde emoji ve "●" kutu olarak çıkar.
 
 - **📅 ve 🗓 emojileri:** Görselde İngilizce "July 17" yazısıyla çıkıyor. Kullanma, yerine ⏰ ya da Türkçe tarih etiketi kullan.
 - **Kutu olarak çıkan emojiler:** 🍽 ve 📋 gibi bazı emojiler kutu olarak görünüyor. Önizlemede kontrol et.

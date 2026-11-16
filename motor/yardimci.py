@@ -23,6 +23,12 @@ def soften(v):
     v.sfx = [(t, "hit" if k == "boom" else k) for t, k in v.sfx]
     v.clips = [c for c in v.clips if not (isinstance(c, Shock) and c.r1 == 300)]
 
+def zaman(isim):
+    """MP3'teki saniyeyi videodaki saniyeye çevirir: baştaki 0,15 sn gecikme + render.py'deki BOSLUK'lar."""
+    from render import BOSLUK, ON_SESSIZLIK_MS
+    gaps = BOSLUK.get(isim, [])
+    return lambda t: t + ON_SESSIZLIK_MS / 1000 + sum(d for g, d in gaps if t > g)
+
 def ses(isim):
     """sesler/<isim>.mp3 dosyasından hazırlanan işlenmiş ses (build/sesler/<isim>.wav)."""
     return os.path.join(KOK, "build", "sesler", isim + ".wav")
