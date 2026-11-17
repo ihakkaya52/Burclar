@@ -29,6 +29,9 @@ Bitenleri görmek için `python render.py liste` komutunu çalıştır, ya da `v
    - Altyazı kelimeleri konuşmayla aynı anda çıkar: `times=spread([(başlangıç, bitiş, kelime_sayısı)])`.
 6. **Kontrol et:** `python render.py <video> --onizleme t1,t2,...` ile en kalabalık anlardan kare al ve bak. Yazı taşması, üst üste binme ve kutu olarak görünen emoji olup olmadığını kontrol et.
 7. **Üret:** `python render.py <video>` ve `cikti/<video>.mp4` dosyasını Harun'a gönder. Cevapta kısaca hangi anların sesle nasıl eşleştiğini anlat.
+8. **Açıklamayı yaz:** Instagram açıklamasını `aciklamalar/<video>.txt` dosyasına kaydet ve cevapta ver.
+   Kalıp: ilk satır kanca (soru ya da iddia), bir yorum sorusu, etiketle ve kaydet çağrısı, sonda 3–5
+   Türkçe karakterli hashtag. Maddeleri açıklamada sayma, sonraki videoyu duyurma.
 
 ## Harun'un tercihleri
 
@@ -55,7 +58,8 @@ Her kategori ayrı bir kişi tarafından seslendirilir:
 
 - **Erkek burç videoları:** Emre – Deep & Natural Turkish Male (`euBhqSy9BY3XHNLwxF7J`)
 - **Kadın burç videoları:** Hale – Warm Turkish Influencer (`SBqwqJrrVooSHZ6ofGmf`)
-- Arkadaşlık ve aşk videoları için ses henüz seçilmedi; Harun'a sor.
+- Arkadaşlık ve aşk videoları eski sesleriyle paylaşılacak (Harun böyle karar verdi); yenileri için ses
+  seçilmedi, Harun'a sor.
 
 Tarih ve sayıları metinde rakamla yaz ("23 Ekim", "3 yıl"); `eleven_v4` doğru okuyor. Üretim kredi harcar:
 aynı metni ikinci kez üretme, gelen iki denemeden birini kullan.
@@ -64,8 +68,10 @@ aynı metni ikinci kez üretme, gelen iki denemeden birini kullan.
 
 Harun eski halini "donuk, ekran hep sabit" buldu. Yeni kalıp `akrep_erkegi` ve `akrep_kadini`:
 
-- **İlk 3 saniye takvim:** metin burcun tarih aralığıyla açılır, ekranda ay yaprağı günleri sırayla boyar
-  (`sahne.takvim_giris`; başka burç için aynı fonksiyonu o burcun aylarıyla yaz).
+- **Açılış: önce burç, sonra takvim.** Harun Akrep'ten sonra bunu istedi: metin burcun adıyla açılır
+  ("Hayatında bir Aslan erkeği mi var?"), tarih aralığı ikinci cümlede gelir ve o sırada ay yaprağı
+  günleri sırayla boyar (`sahne.takvim(v, ASLAN, ...)`; yeni burç için `sahne.py`'ye ay listesini ekle).
+  Örnek: `aslan_erkegi`, `aslan_kadini`. Akrep videoları eski sırayla (önce takvim) kaldı.
 - **Her maddeye kendi mini sahnesi:** rakam ortaya çarpar, söylenince köşeye uçar (`sahne.sayi`), ortayı
   o maddeyi anlatan hareketli görsel alır (`motor/sahne.py`: `Meter`, `Kapi`, `Anahtar`, `Dalga`, `Yazi`,
   `Simsek`, `Yagis`, `Yorunge`, `Glow`, `Fx`). Arka arkaya iki sahne aynı düzende olmasın.

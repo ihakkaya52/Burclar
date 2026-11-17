@@ -12,6 +12,7 @@ Animasyonlar, altyazılar, ses efektleri ve fon müziği tamamen kodla üretilir
 | `motor/sahne.py` | Hareketli sahne parçaları: takvim, gösterge, kapı, şalter, ses dalgası, yazan balon, şimşek, yağış |
 | `videolar/*.py` | Her videonun senaryosu: hangi yazının, hangi saniyede, hangi efektle çıkacağı |
 | `sesler/*.mp3` | ElevenLabs'tan alınan orijinal seslendirmeler |
+| `aciklamalar/*.txt` | Her videonun Instagram açıklaması |
 | `metinler/*.txt` | Seslendirme metinleri (ElevenLabs'a yapıştırılan halleri) |
 | `render.py` | Sesi hazırlar ve videoyu üretir |
 | `analiz.py` | Sesi konuşma parçalarına böler, zamanlamaları çıkarır |
@@ -56,8 +57,8 @@ Bir şakaya ya da gerilim anına ek sessizlik gerekiyorsa, `render.py` içindeki
 
 ## Video türleri
 
-- **"5 şey" geri sayımı** (tek burç): `koc_erkegi`, `ikizler_erkegi`, `boga`, `akrep_erkegi`, `akrep_kadini`. Hareketli vurgu kullanır.
-  Akrep videoları yeni kalıptadır: takvimli açılış ve her maddeye ayrı hareketli sahne.
+- **"5 şey" geri sayımı** (tek burç): `koc_erkegi`, `ikizler_erkegi`, `boga`, `akrep_erkegi`, `akrep_kadini`, `aslan_erkegi`, `aslan_kadini`. Hareketli vurgu kullanır.
+  Akrep ve Aslan videoları yeni kalıptadır: takvimli açılış ve her maddeye ayrı hareketli sahne.
 - **Aşk uyumu**: giriş, uyum halkası, neden çekilirler, sorun, mesajlaşma, puanlar, formül, kapanış.
 - **Arkadaşlık**: çarpışmalı giriş, uyum halkası, iyi taraf, kötü taraf (şaka), puanlar, sonuç, kapanış.
 - **Genel**: `burclar_genel`. 12 burç ve tarihleri.

@@ -19,6 +19,8 @@ BOSLUK = {
     "koc_erkegi": [(23.80, 0.6)],                               # "Ve bir numara…" sonrası gerilim
     "akrep_erkegi": [(25.70, 0.6)],                             # "Ve bir numara…" sonrası gerilim
     "akrep_kadini": [(26.42, 0.6), (30.10, 0.35)],              # "Ve bir numara…" sonrası + "geçmiş olsun" öncesi
+    "aslan_erkegi": [(25.46, 0.6)],                             # "Ve bir numara…" sonrası gerilim
+    "aslan_kadini": [(25.22, 0.6)],                             # "Ve bir numara…" sonrası gerilim
 }
 ON_SESSIZLIK_MS = 150
 TEMIZLIK = "highpass=f=80,acompressor=threshold=-20dB:ratio=3.5:attack=4:release=80:makeup=2,loudnorm=I=-15:TP=-1.5:LRA=7"

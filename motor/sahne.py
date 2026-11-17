@@ -235,6 +235,33 @@ def dosya(baslik, satirlar, damga=None, w=640):
         im.alpha_composite(st.rotate(4, resample=Image.BICUBIC), (0, h - 116))
     return im
 
+class Yaziyor:
+    """"Yazıyor…" balonu: zıplayan üç nokta."""
+    def __init__(s, x, y, t0, t1, bg=(58, 58, 72), kuyruk="l"):
+        s.x, s.y, s.t0, s.t1 = x, y, t0, t1; s.zemin = _balon_zemin(230, 120, bg, kuyruk)
+    def draw(s, dst, t):
+        if not (s.t0 <= t < s.t1): return
+        im = s.zemin.copy(); d = ImageDraw.Draw(im); lt = t - s.t0
+        for k in range(3):
+            off = 12 * math.sin(lt * 11 - k * .9)
+            d.ellipse([58 + k * 56 - 15, 60 - 15 - off, 58 + k * 56 + 15, 60 + 15 - off], fill=(235, 235, 240, 255))
+        if lt < .28: im = _olcek(im, max(.05, back(lt / .28)))
+        put(dst, im, s.x, s.y, _gir_cik(t, s.t0, s.t1, .1))
+
+class Spot:
+    """Tepeden inen sahne ışığı (yumuşak kenarlı huzme) ve yerdeki ışık halkası."""
+    def __init__(s, x, y_ust, y_alt, w_alt, t0, t1, col=(255, 236, 160), a=.5, sallan=0):
+        h = int(y_alt - y_ust); w = int(w_alt + 80)
+        im = Image.new("RGBA", (w, h + 80), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+        d.polygon([(w / 2 - 36, 0), (w / 2 + 36, 0), (w - 40, h), (40, h)], fill=col + (150,))
+        d.ellipse([40, h - 46, w - 40, h + 46], fill=col + (190,))
+        s.img = im.filter(ImageFilter.GaussianBlur(16)); s.x, s.y, s.t0, s.t1, s.a, s.sallan = x, (y_ust + y_alt) / 2 + 40, t0, t1, a, sallan
+    def draw(s, dst, t):
+        if not (s.t0 <= t < s.t1): return
+        lt = t - s.t0; im = s.img
+        if s.sallan: im = im.rotate(s.sallan * math.sin(lt * 2.2), resample=Image.BILINEAR, center=(im.width / 2, 0))
+        put(dst, im, s.x, s.y, s.a * _gir_cik(t, s.t0, s.t1, .25, .15) * (.85 + .15 * math.sin(lt * 9)))
+
 # ---------------- hava olayları ----------------
 class Simsek:
     def __init__(s, t, x0, y0, x1, y1, seed=1, dur=.3):
@@ -253,10 +280,10 @@ class Simsek:
 
 class Yagis:
     """Kutu içinde düşen kar (❄) ya da yağmur çizgileri."""
-    def __init__(s, tur, t0, t1, kutu, n=26, seed=1):
+    def __init__(s, tur, t0, t1, kutu, n=26, seed=1, emo="❄"):
         r = random.Random(seed); s.tur, s.t0, s.t1, s.kutu = tur, t0, t1, kutu
         s.ps = [(r.uniform(0, 1), r.uniform(0, 1), r.uniform(.6, 1.4), r.uniform(0, 6.3), r.randrange(3)) for _ in range(n)]
-        if tur == "kar": s.im = [emoji_img("❄", k) for k in (30, 44, 60)]
+        if tur == "kar": s.im = [emoji_img(emo, k) for k in (30, 44, 60)]
     def draw(s, dst, t):
         if not (s.t0 <= t < s.t1): return
         x0, y0, x1, y1 = s.kutu; bw, bh = x1 - x0, y1 - y0; lt = t - s.t0; fa = _gir_cik(t, s.t0, s.t1, .3, .2)
@@ -289,11 +316,21 @@ def sayi(v, n, t0, t1, hx, hy, bekle=.7, ses="hit"):
     v.add(Shock(t0 + .15, mx, my, YEL, 80, 620 if bekle > 0 else 300, .5, 18))
     if bekle > 0: v.sfx.append((t0 + bekle, "swish"))
 
-def takvim_giris(v, t_ilk, t_cevir, t_son, t1, y=670):
-    """Akrep'in tarih aralığı: Ekim yaprağında 23–31 boyanır, yaprak çevrilir, Kasım'da 1–21 boyanır."""
-    v.add(Takvim("Kasım", 6, 30, range(1, 22), W / 2, y, t_cevir - .05, t1, t_cevir + .12, t_son, col=(150, 40, 90), giris="yok", rot=1.5))
-    v.add(Takvim("Ekim", 3, 31, range(23, 32), W / 2, y, 0, t1, t_ilk, t_cevir - .12, col=(200, 60, 50), cik=t_cevir, rot=-2))
-    v.sfx += [(t_ilk + k * (t_cevir - .12 - t_ilk) / 8, "tick") for k in range(9)]
+def takvim(v, aylar, t0, t_ilk, t_cevir, t_son, t1, y=670):
+    """Tarih aralığı takvimi: ilk ayın günleri boyanır, yaprak çevrilir, ikinci ayın günleri boyanır.
+    aylar: [(ad, ayın_1'i_haftanın_kaçıncı_günü, gün_sayısı, boyanacak_günler, renk), (ikinci ay için aynısı)]."""
+    (a1, i1, g1, m1, c1), (a2, i2, g2, m2, c2) = aylar; m1, m2 = list(m1), list(m2)
+    v.add(Takvim(a2, i2, g2, m2, W / 2, y, t_cevir - .05, t1, t_cevir + .12, t_son, col=c2, giris="yok", rot=1.5))
+    v.add(Takvim(a1, i1, g1, m1, W / 2, y, t0, t1, t_ilk, t_cevir - .12, col=c1, cik=t_cevir, rot=-2))
+    v.sfx += [(t_ilk + k * (t_cevir - .12 - t_ilk) / max(1, len(m1) - 1), "tick") for k in range(len(m1))]
     v.sfx.append((t_cevir - .05, "whoosh"))
-    v.sfx += [(t_cevir + .12 + k * (t_son - t_cevir - .12) / 20, "tick") for k in range(0, 21, 2)]
+    v.sfx += [(t_cevir + .12 + k * (t_son - t_cevir - .12) / max(1, len(m2) - 1), "tick") for k in range(0, len(m2), 2)]
     v.punch.append((t_cevir + .05, .05)); v.shake(t_cevir + .05, 10)
+
+# 2026 takvimine göre: (ad, ayın 1'inin günü [0 = Pzt], gün sayısı, burcun günleri, renk)
+AKREP = [("Ekim", 3, 31, range(23, 32), (200, 60, 50)), ("Kasım", 6, 30, range(1, 22), (150, 40, 90))]
+ASLAN = [("Temmuz", 2, 31, range(23, 32), (232, 92, 40)), ("Ağustos", 5, 31, range(1, 23), (214, 150, 20))]
+
+def takvim_giris(v, t_ilk, t_cevir, t_son, t1, y=670):
+    """Akrep takvimi, videonun ilk karesinden başlar (akrep_erkegi ve akrep_kadini kullanır)."""
+    takvim(v, AKREP, 0, t_ilk, t_cevir, t_son, t1, y)
