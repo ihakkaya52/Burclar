@@ -62,22 +62,34 @@ Her kategori ayrı bir kişi tarafından seslendirilir:
   seçilmedi, Harun'a sor.
 
 Tarih ve sayıları metinde rakamla yaz ("23 Ekim", "3 yıl"); `eleven_v4` doğru okuyor. Üretim kredi harcar:
-aynı metni ikinci kez üretme, gelen iki denemeden birini kullan.
+aynı metni ikinci kez üretme. Sesi dinleyemediğim için ikinci deneme boşa gider: `generations_count=1` ile üret.
+Harun'un planı ayda yaklaşık 30.000 karakter; bir video yaklaşık 500 karakter. Toplu işten önce `account_get_usage` ile bak.
 
-## Tek burç ("5 şey") videolarının görsel dili
+## Tek burç ("5 şey") videoları: kalıp
 
-Harun eski halini "donuk, ekran hep sabit" buldu. Yeni kalıp `akrep_erkegi` ve `akrep_kadini`:
+Harun eski halini "donuk, ekran hep sabit" buldu. 24 videonun hepsi (12 burç × erkek/kadın) yeni kalıpta.
 
-- **Açılış: önce burç, sonra takvim.** Harun Akrep'ten sonra bunu istedi: metin burcun adıyla açılır
-  ("Hayatında bir Aslan erkeği mi var?"), tarih aralığı ikinci cümlede gelir ve o sırada ay yaprağı
-  günleri sırayla boyar (`sahne.takvim(v, ASLAN, ...)`; yeni burç için `sahne.py`'ye ay listesini ekle).
-  Örnek: `aslan_erkegi`, `aslan_kadini`. Akrep videoları eski sırayla (önce takvim) kaldı.
-- **Her maddeye kendi mini sahnesi:** rakam ortaya çarpar, söylenince köşeye uçar (`sahne.sayi`), ortayı
-  o maddeyi anlatan hareketli görsel alır (`motor/sahne.py`: `Meter`, `Kapi`, `Anahtar`, `Dalga`, `Yazi`,
-  `Simsek`, `Yagis`, `Yorunge`, `Glow`, `Fx`). Arka arkaya iki sahne aynı düzende olmasın.
+- **Açılış: önce burç, sonra takvim.** Metin burcun adıyla açılır ("Hayatında bir Aslan erkeği mi var?"),
+  tarih aralığı ikinci cümlede gelir ve o sırada ay yaprağı günleri sırayla boyar. Akrep videoları eski
+  sırayla (önce takvim) kaldı.
+- **Her maddeye kendi mini sahnesi:** rakam ortaya çarpar, söylenince köşeye uçar, ortayı o maddeyi anlatan
+  hareketli görsel alır. Bir videoda aynı sahne kalıbını iki kez kullanma.
 - **Maddeler izleyiciye "sen" diye konuşur** ("ondan hiçbir şey saklayamazsın"), burcu dışarıdan anlatmaz.
-- Senaryoda zamanları `z = zaman("<video>")` ile yaz: mp3 saniyesini verirsin, 0,15 sn gecikmeyi ve
-  `BOSLUK`'ları kendisi ekler.
+
+**Nasıl kurulur:** Akrep ve Aslan elle yazıldı (`videolar/akrep_*.py`, `aslan_*.py`). Diğer 20 video
+`motor/kalip.py` ile kurulur; video dosyası yalnızca bir `SPEC` verir: burç, cinsiyet ve beş madde
+(cümleler + sahne kalıbı + ayarları). Gerisi otomatiktir:
+
+- `kalip.metin(SPEC)` seslendirme metnini üretir (giriş, tarih, "Beş:"…"Ve bir numara…", kapanış sabittir).
+- `kalip.hizala(SPEC)` sesi sessizliklerinden cümlelere, cümleleri hecelerine göre kelimelere böler.
+  `analiz.py` ile elle eşleştirme gerekmez. Kontrol: geri sayım rakamları her seste 0,30–0,47 sn sürmeli;
+  süren olmazsa hizalama kaymıştır.
+- "Ve bir numara…" sonrasına 0,6 sn sessizlik kendiliğinden eklenir.
+- Sahne kalıpları (`kalip.SAHNELER`): `gosterge`, `mesaj`, `donusum`, `kapi`, `salter`, `isik`, `sonra`,
+  `yorunge`, `yuksel`, `arsiv`, `gozler`, `yol`, `yazi`, `sayac`, `saganak`, `kacis`, `slot`, `duzelt`,
+  `duvar`, `damga`, `liste`. Tetikler: sayı = o cümlenin başı, kelime = söylendiği an, `(tetik, sn)` = gecikme.
+- "…" ile biten parçayı ayrı cümle olarak yaz (`["Kızınca her şeyi söyler…", "ama kin tutmaz."]`).
+- Yeni bir maddeyi değiştirince metin değişir: sesi yeniden üretmek gerekir.
 
 ## Teknik tuzaklar
 

@@ -9,6 +9,7 @@ Animasyonlar, altyazılar, ses efektleri ve fon müziği tamamen kodla üretilir
 |---|---|
 | `motor/engine.py` | Animasyon motoru: arka plan, altyazılar, etiketler, uyum halkası, puan çubukları, mesajlaşma ekranı, konfeti, ses efektleri, müzik |
 | `motor/yardimci.py` | Ortak yardımcılar (`big`, `spread`, `soften`, `ses`, `zaman`) |
+| `motor/kalip.py` | Tek burç videolarının ortak kalıbı: metin, otomatik zamanlama, sahne kalıpları, kurulum |
 | `motor/sahne.py` | Hareketli sahne parçaları: takvim, gösterge, kapı, şalter, ses dalgası, yazan balon, şimşek, yağış |
 | `videolar/*.py` | Her videonun senaryosu: hangi yazının, hangi saniyede, hangi efektle çıkacağı |
 | `sesler/*.mp3` | ElevenLabs'tan alınan orijinal seslendirmeler |
@@ -57,8 +58,10 @@ Bir şakaya ya da gerilim anına ek sessizlik gerekiyorsa, `render.py` içindeki
 
 ## Video türleri
 
-- **"5 şey" geri sayımı** (tek burç): `koc_erkegi`, `ikizler_erkegi`, `boga`, `akrep_erkegi`, `akrep_kadini`, `aslan_erkegi`, `aslan_kadini`. Hareketli vurgu kullanır.
-  Akrep ve Aslan videoları yeni kalıptadır: takvimli açılış ve her maddeye ayrı hareketli sahne.
+- **"5 şey" geri sayımı** (tek burç): 12 burç × erkek/kadın, `<burc>_erkegi` ve `<burc>_kadini`. Hareketli vurgu kullanır.
+  Burcun adıyla açılır, tarih aralığı takvimle gelir, her maddenin kendi hareketli sahnesi vardır.
+  Akrep ve Aslan elle yazıldı; diğerleri `motor/kalip.py` ile bir `SPEC`'ten kurulur.
+  (`boga` eski kalıptaki cinsiyetsiz Boğa videosudur; yerini `boga_erkegi` ve `boga_kadini` aldı.)
 - **Aşk uyumu**: giriş, uyum halkası, neden çekilirler, sorun, mesajlaşma, puanlar, formül, kapanış.
 - **Arkadaşlık**: çarpışmalı giriş, uyum halkası, iyi taraf, kötü taraf (şaka), puanlar, sonuç, kapanış.
 - **Genel**: `burclar_genel`. 12 burç ve tarihleri.
