@@ -105,7 +105,7 @@ class Meter:
         et = rich(s.etiket, mont(40, 900), WHITE); im.alpha_composite(et, (26, 54 - et.height // 2))
         d.text((Wi - 32, 54), f"%{int(round(s.hedef * p))}", font=mont(56, 900), fill=col + (255,), anchor="rm")
         d.rounded_rectangle([30, 104, Wi - 30, 160], radius=28, fill=(255, 255, 255, 46))
-        if p > .01: d.rounded_rectangle([30, 104, 30 + max(56, int(s.w * s.hedef / 100 * p)), 160], radius=28, fill=col + (255,))
+        if p > .01: d.rounded_rectangle([30, 104, 30 + max(56, int(s.w * min(1, s.hedef / 100) * p)), 160], radius=28, fill=col + (255,))
         lt = t - s.t0; x = s.x; son = t - s.f0 - s.fdur
         if lt < .3: im = _olcek(im, max(.05, back(lt / .3)))
         if 0 <= son < .5: x += 9 * math.sin(t * 85) * (1 - son / .5)
@@ -115,6 +115,7 @@ class Anahtar:
     """İki uçlu şalter. gecis: [(an, 0|1)]. İlk geçişe kadar ortada titrer (ortası yok)."""
     def __init__(s, x, y, t0, t1, gecis, sol="HİÇ", sag="HEP", w=520, h=180, c_sol=(74, 78, 104), c_sag=PINK):
         s.__dict__.update(x=x, y=y, t0=t0, t1=t1, gecis=gecis, sol=sol, sag=sag, w=w, h=h, c_sol=c_sol, c_sag=c_sag)
+        s.fs = 58 if max(len(sol), len(sag)) <= 5 else 44
     def konum(s, t):
         v = prev = .5
         for tm, hedef in s.gecis:
@@ -123,18 +124,45 @@ class Anahtar:
         return v
     def draw(s, dst, t):
         if not (s.t0 <= t < s.t1): return
-        v = s.konum(t); once = t < s.gecis[0][0]; Wi, Hi = s.w + 80, s.h + 150
+        v = s.konum(t); once = t < s.gecis[0][0]; m = 200; Wi, Hi = s.w + 2 * m, s.h + 150
         im = Image.new("RGBA", (Wi, Hi), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
-        d.rounded_rectangle([40, 10, 40 + s.w, 10 + s.h], radius=s.h // 2, fill=_kar(s.c_sol, s.c_sag, v) + (255,), outline=WHITE + (255,), width=8)
-        r = s.h / 2 - 18; kx = 40 + s.h / 2 + max(-.08, min(1.08, v)) * (s.w - s.h) + (7 * math.sin(t * 60) if once else 0); ky = 10 + s.h / 2
+        d.rounded_rectangle([m, 10, m + s.w, 10 + s.h], radius=s.h // 2, fill=_kar(s.c_sol, s.c_sag, v) + (255,), outline=WHITE + (255,), width=8)
+        r = s.h / 2 - 18; kx = m + s.h / 2 + max(-.08, min(1.08, v)) * (s.w - s.h) + (7 * math.sin(t * 60) if once else 0); ky = 10 + s.h / 2
         d.ellipse([kx - r + 4, ky - r + 8, kx + r + 4, ky + r + 8], fill=(0, 0, 0, 90))
         d.ellipse([kx - r, ky - r, kx + r, ky + r], fill=WHITE + (255,))
-        for lab, lx, on in ((s.sol, 40 + s.h / 2, v < .3 and not once), (s.sag, 40 + s.w - s.h / 2, v > .7 and not once)):
-            d.text((lx, s.h + 82), lab, font=mont(76 if on else 58, 900), fill=(YEL if on else (200, 200, 215)) + (255,), anchor="mm",
+        for lab, lx, on in ((s.sol, m + s.h / 2, v < .3 and not once), (s.sag, m + s.w - s.h / 2, v > .7 and not once)):
+            d.text((lx, s.h + 82), lab, font=mont(int(s.fs * 1.3) if on else s.fs, 900), fill=(YEL if on else (200, 200, 215)) + (255,), anchor="mm",
                    stroke_width=7, stroke_fill=BLACK + (255,))
         lt = t - s.t0
         if lt < .3: im = _olcek(im, max(.05, back(lt / .3)))
         put(dst, im, s.x, s.y + 60, _gir_cik(t, s.t0, s.t1, .12))
+
+class Sayac:
+    """Sıfırdan hedefe sayan dev rakam."""
+    def __init__(s, hedef, x, y, t0, t1, f0, sure=.9, size=280, col=YEL):
+        s.__dict__.update(hedef=hedef, x=x, y=y, t0=t0, t1=t1, f0=f0, sure=sure)
+        s.im = [big(str(k), size, col, 14) for k in range(hedef + 1)]
+    def draw(s, dst, t):
+        if not (s.t0 <= t < s.t1): return
+        p = max(0., min(1., (t - s.f0) / s.sure)); k = int(round(s.hedef * p)); im = s.im[k]
+        adim = s.sure / max(1, s.hedef); son = (t - s.f0) - k * adim if 0 < p else 9
+        if 0 <= son < .12: im = _olcek(im, 1 + .25 * (1 - son / .12))
+        put(dst, im, s.x, s.y, _gir_cik(t, s.t0, s.t1, .15))
+
+class Slot:
+    """Hızla dönen emojiler; `dur` anında sonuncuda durur."""
+    def __init__(s, emojiler, x, y, t0, t1, dur, h=250, adim=.13):
+        s.__dict__.update(x=x, y=y, t0=t0, t1=t1, dur=dur, adim=adim)
+        s.im = [emoji_img(e, h) for e in emojiler]
+        z = Image.new("RGBA", (h + 120, h + 110), (0, 0, 0, 0))
+        ImageDraw.Draw(z).rounded_rectangle([0, 0, h + 119, h + 109], radius=46, fill=(8, 8, 20, 205), outline=YEL + (255,), width=8); s.zemin = z
+    def draw(s, dst, t):
+        if not (s.t0 <= t < s.t1): return
+        a = _gir_cik(t, s.t0, s.t1, .15); put(dst, s.zemin, s.x, s.y, a)
+        if t >= s.dur:
+            lt = t - s.dur; put(dst, _olcek(s.im[-1], 1 + .3 * (1 - ease(lt / .2)) if lt < .2 else 1), s.x, s.y, a); return
+        k = int((t - s.t0) / s.adim); fr = ((t - s.t0) % s.adim) / s.adim
+        put(dst, s.im[k % (len(s.im) - 1)], s.x, s.y - 40 + 80 * fr, a * min(1, fr * 3, (1 - fr) * 3))
 
 class Dalga:
     """Ses dalgası çubukları (dinliyor / kaydediyor hissi)."""
