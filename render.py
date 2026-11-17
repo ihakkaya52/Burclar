@@ -16,7 +16,6 @@ sys.path.insert(0, os.path.join(KOK, "videolar"))
 # Sese eklenen boşluklar: {video: [(saniye, eklenecek_sessizlik), ...]}  (orijinal mp3 zamanına göre)
 BOSLUK = {
     "ikizler_erkek_x_akrep_erkek_arkadaslik": [(24.40, 1.4)],   # "İkizler de hemen…" sonrası sansür şakası
-    "koc_erkegi": [(23.80, 0.6)],                               # "Ve bir numara…" sonrası gerilim
     "akrep_erkegi": [(25.70, 0.6)],                             # "Ve bir numara…" sonrası gerilim
     "akrep_kadini": [(26.42, 0.6), (30.10, 0.35)],              # "Ve bir numara…" sonrası + "geçmiş olsun" öncesi
     "aslan_erkegi": [(25.46, 0.6)],                             # "Ve bir numara…" sonrası gerilim
@@ -28,11 +27,11 @@ TEMIZLIK = "highpass=f=80,acompressor=threshold=-20dB:ratio=3.5:attack=4:release
 def videolar():
     return sorted(f[:-3] for f in os.listdir(os.path.join(KOK, "videolar")) if f.endswith(".py"))
 
-def ses_hazirla(isim):
+def ses_hazirla(isim, gaps=None):
     src = os.path.join(KOK, "sesler", isim + ".mp3")
     dst = os.path.join(KOK, "build", "sesler", isim + ".wav")
     os.makedirs(os.path.dirname(dst), exist_ok=True)
-    gaps = BOSLUK.get(isim, [])
+    gaps = BOSLUK.get(isim, []) if gaps is None else gaps
     if not gaps:
         fc = f"[0]adelay={ON_SESSIZLIK_MS},{TEMIZLIK}[o]"
     else:
@@ -52,8 +51,9 @@ def ses_hazirla(isim):
     return dst
 
 def yap(isim, onizleme=None):
-    ses_hazirla(isim)
-    v = importlib.import_module(isim).video()
+    m = importlib.import_module(isim)
+    ses_hazirla(isim, m.bosluk() if hasattr(m, "bosluk") else None)   # kalıp videoları boşluğu kendisi hesaplar
+    v = m.video()
     os.makedirs(os.path.join(KOK, "cikti"), exist_ok=True)
     if onizleme:
         from PIL import Image

@@ -6,7 +6,7 @@ from kalip import *
 # Tetik: sayı = o cümlenin başı, kelime = o kelimenin söylendiği an, (tetik, sn) = tetikten sn kadar sonra.
 SPEC = dict(burc="Terazi", cins="e", maddeler=[
     (["Karar vermesi saatler sürer.", "Ona sakın “ne yiyelim” diye sorma."],
-     "salter", dict(sol="PİZZA", sag="BURGER", gecis=[(0, 1), ((0, .5), 0), ((0, 1.0), 1), (1, 0), ((1, .5), 1), ((1, 1.0), 0)], son=("3 saat sonra: “fark etmez”", "sorma"))),
+     "salter", dict(sol="PİZZA", sag="BURGER", gecis=[(0, 1), ((0, .5), 0), ((0, 1.0), 1), (1, 0), ((1, .5), 1), ((1, 1.0), 0)], son=("3 saat sonra: hâlâ aynı 🙃", "sorma"))),
     (["Kavgadan kaçar.", "Ortam gerilirse, konuyu hemen değiştirir."],
      "mesaj", dict(msgs=[("r", "konuşmamız lazım. 😐", 0), ("l", "hava ne güzel bugün ☀", 1)], damga=("KONU DEĞİŞTİ 💨", "değiştirir"))),
     (["Herkese iyi davranır.", "Bunu flört sanma, o hep böyledir."],
